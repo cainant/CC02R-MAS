@@ -115,3 +115,10 @@ if __name__ == '__main__':
     Admin().start_system()
 
     Admin().stop_all_agents()    
+
+
+'''
+TODO:
+- Driver loop for parking and freeing spot
+- Manager must recalculate all prices after driver parking and freeing spot
+'''
