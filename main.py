@@ -97,7 +97,7 @@ class Manager(Agent):
     @pl(gain, Goal("CheckOffer", ("SPOT", "AGENT", "PRICE")))
     def check_offer(self, src, offer):
         spot, agent, price = offer
-        self.print(f'Checking offer from ({agent})')
+        self.print(f'Checking offer from ({agent[0].str_name})')
         if(rnd.choice([True, False])):
             self.send(agent[0].str_name, tell, Belief("Parked"))
             execute = (spot, agent[0])
@@ -126,7 +126,7 @@ class Driver(Agent):
     def check_price(self, src, checkprice):
         price, spot = checkprice
         if(rnd.choice([True, False])):
-            self.print(f'Accepting spot at ({spot})')
+            self.print(f'Counter offer spot at ({spot})')
             execute = (spot, self, rnd.random())
             self.send('Manager', achieve, Goal("Negotiation", ("offer", execute)))
         else:
@@ -136,10 +136,6 @@ class Driver(Agent):
 
     @pl(gain, Belief('Parked'))
     def parked(self, src):
-        self.times_parked += 1
-        if (self.times_parked == 2):
-            self.stop_cycle()
-            return
         self.print('Parking')
         sleep(3)
         self.print('Leaving spot')
