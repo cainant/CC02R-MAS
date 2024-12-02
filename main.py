@@ -71,16 +71,7 @@ class Manager(Agent):
     def search_spot(self, src, search_spot):
         city_zone, agent = search_spot
         self.print(f'Searching spot in ({city_zone}) for ({agent})')
-        spot = None
-        match city_zone:
-            case [CityZones.N]:
-                spot = self.get(Belief("spot", ("ID", city_zone, "SUBSECTOR", "free")))
-            case [CityZones.S]:
-                spot = self.get(Belief("spot", ("ID", city_zone, "SUBSECTOR", "free")))
-            case [CityZones.E]:
-                spot = self.get(Belief("spot", ("ID", city_zone, "SUBSECTOR", "free")))
-            case [CityZones.W]:
-                spot = self.get(Belief("spot", ("ID", city_zone, "SUBSECTOR", "free")))
+        spot = self.get(Belief("spot", ("ID", city_zone, "SUBSECTOR", "free")))
         if spot:
             self.add(Goal('OfferSpot', (spot, agent)), instant=True)
             
@@ -91,8 +82,8 @@ class Manager(Agent):
         self.print(f'Offering spot ({spot}) for ({agent})')
         spot_id = spot.args[0]
         price = self.prices_list[spot_id]
-        self.send(agent, achieve, Goal("Negotiation", ("offer", (price, spot))))
-
+        self.send(agent, achieve, Goal("CheckPrice", (price, spot)))
+    
     # Mocks function to check offer price
     @pl(gain, Goal("CheckOffer", ("SPOT", "AGENT", "PRICE")))
     def check_offer(self, src, offer):
@@ -111,16 +102,6 @@ class Driver(Agent):
         super().__init__(agent_name)
         self.times_parked = 0
         self.add(Belief('NotParked'))
-        
-
-    @pl(gain, Goal("Negotiation", ("ACT", "EXECUTE")))
-    def negotiation(self, src, negotiation):
-        act, execute = negotiation
-        match act:
-            case "offer":
-                price, spot = execute
-                self.add(Goal('CheckPrice', (price, spot)))
-                
 
     @pl(gain, Goal('CheckPrice', ("PRICE", "SPOT")))
     def check_price(self, src, checkprice):
